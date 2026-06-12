@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum MovieType {
+  SINGLE
+  SERIES
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  password  String
+  avatar    String?
+  role      Role       @default(USER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Favorite  Favorite[]
+
+  @@index([name])
+}
+
+model Genre {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movie     Movie[]
+}
+
+model Country {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movie     Movie[]
+}
+
+model Actor {
+  id          Int       @id @default(autoincrement())
+  name        String
+  dateOfbirth DateTime?
+  anotherName String?
+  description String?
+  movies      Movie[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([name])
+}
+
+model Movie {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  thumbnail   String
+  banner      String?
+  trailer     String
+  type        MovieType
+  star        Float?    @default(0)
+  releaseYear Int
+  countryId   Int
+  genres      Genre[]
+  actors      Actor[]
+  country     Country   @relation(fields: [countryId], references: [id])
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Favorite  Favorite[]
+
+  @@index([name])
+  @@index([releaseYear])
+}
+
+model Favorite {
+  id      Int @id @default(autoincrement())
+  userId  Int
+  movieId Int
+
+  user      User     @relation(fields: [userId], references: [id])
+  movie     Movie    @relation(fields: [movieId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, movieId])
+}
