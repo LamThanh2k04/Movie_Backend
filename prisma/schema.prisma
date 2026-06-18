@@ -24,6 +24,7 @@ model User {
   password  String
   avatar    String?
   role      Role       @default(USER)
+  isActive  Boolean    @default(true)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   Favorite  Favorite[]
@@ -36,6 +37,7 @@ model Genre {
   name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
   movie     Movie[]
 }
 
@@ -44,6 +46,7 @@ model Country {
   name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
   movie     Movie[]
 }
 
@@ -56,6 +59,7 @@ model Actor {
   movies      Movie[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  isActive    Boolean   @default(true)
 
   @@index([name])
 }
@@ -71,6 +75,7 @@ model Movie {
   star        Float?    @default(0)
   releaseYear Int
   countryId   Int
+  isActive    Boolean   @default(true)
   genres      Genre[]
   actors      Actor[]
   country     Country   @relation(fields: [countryId], references: [id])
