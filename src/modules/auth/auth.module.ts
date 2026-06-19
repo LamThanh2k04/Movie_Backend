@@ -6,6 +6,8 @@ import { CloudinaryModule } from 'src/common/cloudinary/cloudinary.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { jwtConfig } from 'src/common/config/jwt.config';
+import { RoleGuard } from './guards/role.guard';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -17,6 +19,6 @@ import { jwtConfig } from 'src/common/config/jwt.config';
     })
     ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy, RoleGuard],
 })
 export class AuthModule {}
