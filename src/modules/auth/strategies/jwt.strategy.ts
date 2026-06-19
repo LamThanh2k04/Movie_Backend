@@ -1,17 +1,19 @@
-import { NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PrismaService } from "src/common/prisma/prisma.service";
 import { JwtPayLoad } from "src/common/types/jwtPayload.type";
 
-
+@Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(configService: ConfigService, private prisma: PrismaService) {
+
         super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), 
             ignoreExpiration: false,
             secretOrKey: configService.get('JWT_SECRET')!
+
         })
     }
 
@@ -21,11 +23,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                 id: payload.sub
             }
         })
-        if(!user) {
+        if (!user) {
             throw new NotFoundException('Người dùng không tồn tại')
         }
         return {
-            id : user.id
+            id: user.id,
+            role: user.role
         }
     }
 }
