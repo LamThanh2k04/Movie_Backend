@@ -1,7 +1,44 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
+import { Roles } from '../auth/decorators/role.decorators';
+import { Role } from '@prisma/client';
+import { JwtAuthGuard } from '../auth/guards/jwtAuth.guard';
+import { RoleGuard } from '../auth/guards/role.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateUserDto } from './dto/createUser.dto';
+import { UploadedFileType } from 'src/common/types/uploadedFile.type';
+import { successResponse } from 'src/common/helper/response.helper';
+import { UpdateUserDto } from './dto/updateUser.dto';
+import { GetAllUsersDto } from './dto/getAllUsers.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
+
+
+  @Post('createUser')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
+  async createUser(@Body() createUserDto: CreateUserDto, @UploadedFile() avatar: UploadedFileType) {
+    const data = await this.userService.createUser(createUserDto, avatar)
+    return successResponse(data, 'Tạo người dùng thành công', 201)
+  }
+
+  @Put('updateUser')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
+  async updateUser(@Param('userId', ParseIntPipe) userId: number, @Body() updateUserDto: UpdateUserDto, @UploadedFile() avatar: UploadedFileType) {
+    const data = await this.userService.updateUser(userId, updateUserDto, avatar)
+    return successResponse(data, 'Cập nhập người dùng thành công', 200)
+  }
+
+  @Get('getAllUsers')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  async getAllUsers(getAllUsersDto : GetAllUsersDto) {
+    const data = await this.userService.getAllUsers(getAllUsersDto)
+    return successResponse(data, 'Lấy danh sách người dùng thành công', 200)
+  }
 }
