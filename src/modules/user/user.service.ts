@@ -6,6 +6,8 @@ import { UploadedFileType } from 'src/common/types/uploadedFile.type';
 import * as bcrypt from 'bcrypt'
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { Prisma } from '@prisma/client';
+import { GetAllUsersDto } from './dto/getAllUsers.dto';
+
 @Injectable()
 export class UserService {
     constructor(
@@ -77,7 +79,50 @@ export class UserService {
         return updateUser
     }
 
-    async getAllUsers() {}
+    async getAllUsers(getAllUsersDto: GetAllUsersDto) {
+        const { search, page } = getAllUsersDto
+        const limit = 5
+        const skip = (page - 1) * limit
+
+        const whereCondition = {
+            ...(search && {
+                OR: [
+                    {
+                        name: {
+                            contains: search
+                        }
+                    },
+                    {
+                        email: {
+                            contains: search
+                        }
+                    }
+                ]
+            })
+        }
+
+        const [users, totalUsers] = await this.prisma.$transaction([
+            this.prisma.user.findMany({
+                where: whereCondition,
+                take: limit,
+                skip: skip,
+                orderBy: { createdAt: 'desc' }
+            }),
+            this.prisma.user.count({
+                where: whereCondition
+            })
+        ])
+        return {
+            users: users,
+            pagination: {
+                page: page,
+                limit: limit,
+                totalUsers: totalUsers,
+                totalPages: Math.ceil(totalUsers / limit)
+
+            }
+        }
+    }
 
 
 
