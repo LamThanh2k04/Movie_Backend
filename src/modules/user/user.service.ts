@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { CreateUserDto } from './dto/createUser.dto';
@@ -85,7 +85,7 @@ export class UserService {
         const skip = (page - 1) * limit
 
         const whereCondition = {
-             role : Role.USER,
+            role: Role.USER,
             ...(search ? {
                 OR: [
                     {
@@ -125,6 +125,20 @@ export class UserService {
         }
     }
 
-
-
+    async updateUserStatus(userId: number) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId }
+        })
+        if (!user) {
+            throw new NotFoundException('Không tìm thấy người dùng này')
+        }
+        await this.prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                isActive: !user.isActive
+            }
+        })
+    }
 }
