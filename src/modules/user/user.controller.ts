@@ -25,7 +25,7 @@ export class UserController {
     return successResponse(data, 'Tạo người dùng thành công', 201)
   }
 
-  @Put('updateUser')
+  @Put('updateUser/:userId')
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RoleGuard)
   @UseInterceptors(FileInterceptor('avatar'))
@@ -37,8 +37,16 @@ export class UserController {
   @Get('getAllUsers')
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RoleGuard)
-  async getAllUsers(@Query()  getAllUsersDto : GetAllUsersDto) {
+  async getAllUsers(@Query() getAllUsersDto: GetAllUsersDto) {
     const data = await this.userService.getAllUsers(getAllUsersDto)
     return successResponse(data, 'Lấy danh sách người dùng thành công', 200)
+  }
+
+  @Put('updateUserStatus/:userId')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  async updateUserStatus(@Param('userId', ParseIntPipe) userId : number) {
+      await this.userService.updateUserStatus(userId)
+      return successResponse(null,'Cập nhật trạng thái thành công',200)
   }
 }
