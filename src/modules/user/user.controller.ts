@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Roles } from '../auth/decorators/role.decorators';
 import { Role } from '@prisma/client';
@@ -37,7 +37,7 @@ export class UserController {
   @Get('getAllUsers')
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RoleGuard)
-  async getAllUsers(getAllUsersDto : GetAllUsersDto) {
+  async getAllUsers(@Query()  getAllUsersDto : GetAllUsersDto) {
     const data = await this.userService.getAllUsers(getAllUsersDto)
     return successResponse(data, 'Lấy danh sách người dùng thành công', 200)
   }
