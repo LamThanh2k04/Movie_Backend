@@ -5,7 +5,7 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { UploadedFileType } from 'src/common/types/uploadedFile.type';
 import * as bcrypt from 'bcrypt'
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 import { GetAllUsersDto } from './dto/getAllUsers.dto';
 
 @Injectable()
@@ -85,7 +85,8 @@ export class UserService {
         const skip = (page - 1) * limit
 
         const whereCondition = {
-            ...(search && {
+             role : Role.USER,
+            ...(search ? {
                 OR: [
                     {
                         name: {
@@ -98,7 +99,7 @@ export class UserService {
                         }
                     }
                 ]
-            })
+            } : {})
         }
 
         const [users, totalUsers] = await this.prisma.$transaction([
