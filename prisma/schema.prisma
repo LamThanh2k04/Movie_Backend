@@ -44,6 +44,7 @@ model Genre {
 model Country {
   id        Int      @id @default(autoincrement())
   name      String   @unique
+  image     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isActive  Boolean  @default(true)
@@ -56,6 +57,7 @@ model Actor {
   dateOfbirth DateTime?
   anotherName String?
   description String?
+  avatar      String?
   movies      Movie[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
