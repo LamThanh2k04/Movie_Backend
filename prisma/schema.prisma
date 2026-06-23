@@ -56,7 +56,7 @@ model Actor {
   name        String
   dateOfbirth DateTime?
   anotherName String?
-  description String?
+  description String?   @db.LongText
   avatar      String?
   movies      Movie[]
   createdAt   DateTime  @default(now())
