@@ -8,8 +8,9 @@ import { UserModule } from './modules/user/user.module';
 import { GenreModule } from './modules/genre/genre.module';
 import { CountryModule } from './modules/country/country.module';
 import { ActorModule } from './modules/actor/actor.module';
+import { MovieModule } from './modules/movie/movie.module';
 @Module({
-  imports: [configModule,PrismaModule,AuthModule,UserModule,GenreModule,CountryModule,ActorModule],
+  imports: [configModule,PrismaModule,AuthModule,UserModule,GenreModule,CountryModule,ActorModule,MovieModule],
   controllers: [AppController],
   providers: [AppService],
 })
