@@ -35,6 +35,7 @@ export class MovieController {
     thumbnail: UploadedFileType[];
     banner?: UploadedFileType[];
   }) {
+    console.log(createMovieDto)
     const data = await this.movieService.createMovie(createMovieDto, files.trailer?.[0], files.thumbnail?.[0], files.banner?.[0])
     return successResponse(data, 'Tạo phim thành công', 201)
   }
@@ -53,7 +54,7 @@ export class MovieController {
       name: 'banner', maxCount: 1
     }
   ]))
-  async updateMovie(@Param('movieId', ParseIntPipe) movieId: number, updateMovieDto: UpdateMovieDto, @UploadedFiles() files: {
+  async updateMovie(@Param('movieId', ParseIntPipe) movieId: number,@Body() updateMovieDto: UpdateMovieDto, @UploadedFiles() files: {
     trailer?: UploadedFileType[];
     thumbnail?: UploadedFileType[];
     banner?: UploadedFileType[];
