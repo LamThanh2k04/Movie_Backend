@@ -34,15 +34,15 @@ export class CreateMovieDto {
     @IsInt({ message: 'Id quốc gia phải là số nguyên' })
     countryId!: number
 
-    @IsArray()
+    @Transform(({ value }) => Array.isArray(value) ? value.map(Number) : [Number(value)])
+    @IsArray({message: 'Phải là mảng'})
     @ArrayMinSize(1, { message: 'Phải chọn ít nhất 1 thể loại' })
-    @Type(() => Number)
     @IsInt({ each: true, message: 'Id các thể loại phải là số nguyên' })
     genreIds!: number[];
 
-    @IsArray()
+    @Transform(({ value }) => Array.isArray(value) ? value.map(Number) : [Number(value)])
+    @IsArray({message: 'Phải là mảng'})
     @ArrayMinSize(1, { message: 'Phải chọn ít nhất 1 diễn viên' })
-    @Type(() => Number)
     @IsInt({ each: true, message: 'Id các diễn viên phải là số nguyên' })
     actorIds!: number[];
 
