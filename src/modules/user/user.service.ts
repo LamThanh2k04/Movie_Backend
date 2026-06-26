@@ -7,6 +7,8 @@ import * as bcrypt from 'bcrypt'
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { Prisma, Role } from '@prisma/client';
 import { GetAllUsersDto } from './dto/getAllUsers.dto';
+import { AddFavoriteMovieDto } from './dto/addFavoriteMovie.dto';
+import { RemoveFavoriteMovieDto } from './dto/removeFavoriteMovie.dto';
 
 @Injectable()
 export class UserService {
@@ -140,5 +142,51 @@ export class UserService {
                 isActive: !user.isActive
             }
         })
+    }
+
+    async addFavoriteMovie(userId: number, addFavoriteMovieDto: AddFavoriteMovieDto) {
+        const { movieId } = addFavoriteMovieDto
+
+        const movie = await this.prisma.movie.findUnique({
+            where: {
+                id: movieId
+            }
+        })
+        if (!movie) {
+            throw new NotFoundException('Không tìm thấy phim này')
+        }
+
+        await this.prisma.favorite.create({
+            data: {
+                userId: userId,
+                movieId: movieId
+            }
+        })
+    }
+
+    async removeFavoriteMovie(userId: number, removeFavoriteMovieDto: RemoveFavoriteMovieDto) {
+        const { movieId } = removeFavoriteMovieDto
+        await this.prisma.favorite.delete({
+            where: {
+                userId_movieId: {
+                    userId: userId,
+                    movieId: movieId,
+                }
+            }
+        })
+    }
+
+    async getFavoriteMovieUser(userId: number) {
+
+        const favorite = await this.prisma.favorite.findMany({
+            where: {
+                userId: userId
+            },
+            include: {
+                movie: true
+            }
+        })
+        return favorite
+
     }
 }
