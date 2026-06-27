@@ -43,10 +43,10 @@ export class MovieService {
         const movie = await this.prisma.movie.create({
             data: {
                 ...createMovieData,
-                name : name,
-                country : {
-                    connect : {
-                        id : countryId
+                name: name,
+                country: {
+                    connect: {
+                        id: countryId
                     }
                 },
                 trailer: uploadTrailer.secure_url,
@@ -233,5 +233,19 @@ export class MovieService {
                 totalPages: Math.ceil(totalMovies / limit)
             }
         }
+    }
+
+    async getInfoMovie(movieId: number) {
+        const movie = await this.prisma.movie.findUnique({
+            where: {
+                id: movieId
+            },
+            include: {
+                country: true,
+                genres: true,
+                actors: true
+            }
+        })
+        return movie
     }
 }
