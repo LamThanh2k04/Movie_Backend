@@ -78,4 +78,10 @@ export class MovieController {
     const data = await this.movieService.getAllMovies(getAllMoviesDto)
     return successResponse(data, 'Lấy danh sách phim thành công', 200)
   }
+
+  @Get('getInfoMovie/:movieId')
+  async getInfoMovie(@Param('movieId', ParseIntPipe) movieId : number) {
+    const data = await this.movieService.getInfoMovie(movieId)
+    return successResponse(data,'Lấy thông tin phim thành công',200)
+  }
 }
