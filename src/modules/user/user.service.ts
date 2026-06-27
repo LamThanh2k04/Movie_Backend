@@ -147,14 +147,28 @@ export class UserService {
     async addFavoriteMovie(userId: number, addFavoriteMovieDto: AddFavoriteMovieDto) {
         const { movieId } = addFavoriteMovieDto
 
-        const movie = await this.prisma.movie.findUnique({
-            where: {
-                id: movieId
-            }
-        })
+        const [movie, favorite] = await this.prisma.$transaction([
+            this.prisma.movie.findUnique({
+                where: {
+                    id: movieId
+                }
+            }),
+            this.prisma.favorite.findUnique({
+                where: {
+                    userId_movieId: {
+                        userId,
+                        movieId
+                    }
+                }
+            })
+        ])
         if (!movie) {
             throw new NotFoundException('Không tìm thấy phim này')
         }
+        if (favorite) {
+            throw new ConflictException('Phim đã có trong danh sách yêu thích');
+        }
+
 
         await this.prisma.favorite.create({
             data: {
@@ -166,6 +180,28 @@ export class UserService {
 
     async removeFavoriteMovie(userId: number, removeFavoriteMovieDto: RemoveFavoriteMovieDto) {
         const { movieId } = removeFavoriteMovieDto
+
+        const [movie, favorite] = await this.prisma.$transaction([
+            this.prisma.movie.findUnique({
+                where: {
+                    id: movieId
+                }
+            }),
+            this.prisma.favorite.findUnique({
+                where: {
+                    userId_movieId: {
+                        userId,
+                        movieId
+                    }
+                }
+            })
+        ])
+        if (!movie) {
+            throw new NotFoundException('Không tìm thấy phim này')
+        }
+        if (!favorite) {
+            throw new NotFoundException('Phim chưa có trong danh sách yêu thích');
+        }
         await this.prisma.favorite.delete({
             where: {
                 userId_movieId: {
@@ -177,13 +213,18 @@ export class UserService {
     }
 
     async getFavoriteMovieUser(userId: number) {
-
         const favorite = await this.prisma.favorite.findMany({
             where: {
                 userId: userId
             },
             include: {
-                movie: true
+                movie: {
+                    include: {
+                        country: true,
+                        genres: true,
+                        actors: true
+                    }
+                }
             }
         })
         return favorite
