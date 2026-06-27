@@ -55,7 +55,7 @@ export class UserController {
   @Post('addFavoriteMovie')
   @Roles(Role.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
-  async addFavoriteMovie(@Req() req, addFavoriteMovieDto: AddFavoriteMovieDto) {
+  async addFavoriteMovie(@Req() req, @Body() addFavoriteMovieDto: AddFavoriteMovieDto) {
     await this.userService.addFavoriteMovie(req.user.id, addFavoriteMovieDto)
     return successResponse(null, 'Thêm yêu thích phim thành công', 200)
   }
@@ -64,12 +64,12 @@ export class UserController {
   @Post('removeFavoriteMovie')
   @Roles(Role.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
-  async removeFavoriteMovie(@Req() req, removeFavoriteDto: RemoveFavoriteMovieDto) {
+  async removeFavoriteMovie(@Req() req, @Body() removeFavoriteDto: RemoveFavoriteMovieDto) {
     await this.userService.removeFavoriteMovie(req.user.id, removeFavoriteDto)
     return successResponse(null, 'Xóa yêu thích phim thành công', 200)
   }
 
-  
+
   @Get('getFavoriteMovieUser')
   @Roles(Role.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
@@ -77,6 +77,4 @@ export class UserController {
     const data = await this.userService.getFavoriteMovieUser(req.user.id)
     return successResponse(data, 'Lấy danh sách yêu thích phim thành công', 200)
   }
-
-
 }
