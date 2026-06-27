@@ -22,12 +22,16 @@ export class DashboardController {
   @Get('getMovieFavoriteUser')
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RoleGuard)
-  async getMovieFavoriteUser() { 
-     const data = await this.dashboardService.getMovieFavoriteUserChart()
+  async getMovieFavoriteUser() {
+    const data = await this.dashboardService.getMovieFavoriteUserChart()
     return successResponse(data, 'Lấy top 5 phim được yêu thích nhiều nhất thành công', 200)
   }
-  async getFavoriteChart(@Query() favoriteChartDto : FavoriteChartDto) {
+
+  @Get('getFavoriteChart')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  async getFavoriteChart(@Query() favoriteChartDto: FavoriteChartDto) {
     const data = await this.dashboardService.getFavoriteChart(favoriteChartDto)
-    return successResponse(data,'Lấy thống kê lượt thích theo năm thành công',200)
-   }
+    return successResponse(data, 'Lấy thống kê lượt thích theo năm thành công', 200)
+  }
 }
