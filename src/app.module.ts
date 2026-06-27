@@ -9,8 +9,9 @@ import { GenreModule } from './modules/genre/genre.module';
 import { CountryModule } from './modules/country/country.module';
 import { ActorModule } from './modules/actor/actor.module';
 import { MovieModule } from './modules/movie/movie.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 @Module({
-  imports: [configModule,PrismaModule,AuthModule,UserModule,GenreModule,CountryModule,ActorModule,MovieModule],
+  imports: [configModule,PrismaModule,AuthModule,UserModule,GenreModule,CountryModule,ActorModule,MovieModule,DashboardModule],
   controllers: [AppController],
   providers: [AppService],
 })
