@@ -114,4 +114,18 @@ export class CountryService {
             }
         }
     }
+
+    async getAllCountriesSimple() {
+        const countries = await this.prisma.country.findMany({
+            where : {
+                isActive : true
+            },
+            select : {
+                id : true,
+                name : true,
+                image : true
+            }
+        })
+        return countries
+    }
 }
