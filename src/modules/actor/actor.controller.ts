@@ -47,4 +47,9 @@ export class ActorController {
     const data = await this.actorService.getAllActors(getAllActorsDto)
     return successResponse(data,'Lấy danh sách diễn viên thành công',200)
    }
+
+   async getAllActorsSimple() {
+      const data = await this.actorService.getAllActorsSimple() 
+      return successResponse(data,'Lấy danh sách diễn viên thành công',200)
+   }
 }
