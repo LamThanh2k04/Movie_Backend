@@ -122,4 +122,18 @@ export class ActorService {
             }
         }
     }
+    async getAllActorsSimple() {
+        const actors = await this.prisma.actor.findMany({
+            where : {
+                isActive : true
+            },
+            select : {
+                id : true,
+                name : true,
+                avatar : true,
+            }
+        })
+        return actors
+    }
+
 }
