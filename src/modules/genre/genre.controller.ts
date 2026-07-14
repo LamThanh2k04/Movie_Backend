@@ -44,4 +44,9 @@ export class GenreController {
     const data = await this.genreService.getAllGenres(getAllGenresDto)
      return successResponse(data, 'Lấy danh sách thể loại thành công', 200)
   }
+
+   async getAllGenresSimple() {
+      const data = await this.genreService.getAllGenresSimple() 
+      return successResponse(data,'Lấy danh sách thể loại thành công',200)
+   }
 }
