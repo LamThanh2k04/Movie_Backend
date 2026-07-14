@@ -48,6 +48,9 @@ export class CountryController {
     return successResponse(data, 'Lấy danh sách quốc gia thành công', 200)
   }
 
+  @Get('getAllCountriesSimple')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   async getAllCountriesSimple() {
     const data = await this.countryService.getAllCountriesSimple()
     return successResponse(data, 'Lấy danh sách quốc gia thành công', 200)

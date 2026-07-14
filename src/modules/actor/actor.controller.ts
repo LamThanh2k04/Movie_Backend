@@ -36,20 +36,23 @@ export class ActorController {
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RoleGuard)
   async updateActorStatus(@Param('actorId', ParseIntPipe) actorId: number) {
-     await this.actorService.updateActorStatus(actorId)
-     return successResponse(null, 'Cập nhật trạng thái diễn viên thành công', 200)
-   }
+    await this.actorService.updateActorStatus(actorId)
+    return successResponse(null, 'Cập nhật trạng thái diễn viên thành công', 200)
+  }
 
   @Get('getAllActors')
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RoleGuard)
   async getAllActors(@Query() getAllActorsDto: GetAllActorsDto) {
     const data = await this.actorService.getAllActors(getAllActorsDto)
-    return successResponse(data,'Lấy danh sách diễn viên thành công',200)
-   }
+    return successResponse(data, 'Lấy danh sách diễn viên thành công', 200)
+  }
 
-   async getAllActorsSimple() {
-      const data = await this.actorService.getAllActorsSimple() 
-      return successResponse(data,'Lấy danh sách diễn viên thành công',200)
-   }
+  @Get('getAllActorsSimple')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  async getAllActorsSimple() {
+    const data = await this.actorService.getAllActorsSimple()
+    return successResponse(data, 'Lấy danh sách diễn viên thành công', 200)
+  }
 }

@@ -45,6 +45,9 @@ export class GenreController {
      return successResponse(data, 'Lấy danh sách thể loại thành công', 200)
   }
 
+  @Get('getAllGenresSimple')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
    async getAllGenresSimple() {
       const data = await this.genreService.getAllGenresSimple() 
       return successResponse(data,'Lấy danh sách thể loại thành công',200)
