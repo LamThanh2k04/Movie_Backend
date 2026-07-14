@@ -104,4 +104,17 @@ export class GenreService {
             }
         }
     }
+
+    async getAllGenresSimple() {
+        const genres = await this.prisma.genre.findMany({
+            where : {
+                isActive : true
+            },
+            select : {
+                id : true,
+                name : true
+            }
+        })
+        return genres
+    }
 }
