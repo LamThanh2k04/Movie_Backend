@@ -65,7 +65,7 @@ export class ActorService {
         return updateActor
     }
     async updateActorStatus(actorId: number) {
-        const actor = await this.prisma.country.findUnique({
+        const actor = await this.prisma.actor.findUnique({
             where: { id: actorId }
         })
         if (!actor) {
