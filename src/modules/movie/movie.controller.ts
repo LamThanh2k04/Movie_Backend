@@ -10,6 +10,7 @@ import { UploadedFileType } from 'src/common/types/uploadedFile.type';
 import { successResponse } from 'src/common/helper/response.helper';
 import { UpdateMovieDto } from './dto/updateMovie.dto';
 import { GetAllMoviesDto } from './dto/getAllMovies.dto';
+import { GetMoviesBySearch } from './dto/getMovieBySearch';
 
 @Controller('movie')
 export class MovieController {
@@ -54,7 +55,7 @@ export class MovieController {
       name: 'banner', maxCount: 1
     }
   ]))
-  async updateMovie(@Param('movieId', ParseIntPipe) movieId: number,@Body() updateMovieDto: UpdateMovieDto, @UploadedFiles() files: {
+  async updateMovie(@Param('movieId', ParseIntPipe) movieId: number, @Body() updateMovieDto: UpdateMovieDto, @UploadedFiles() files: {
     trailer?: UploadedFileType[];
     thumbnail?: UploadedFileType[];
     banner?: UploadedFileType[];
@@ -80,8 +81,29 @@ export class MovieController {
   }
 
   @Get('getInfoMovie/:movieId')
-  async getInfoMovie(@Param('movieId', ParseIntPipe) movieId : number) {
+  async getInfoMovie(@Param('movieId', ParseIntPipe) movieId: number) {
     const data = await this.movieService.getInfoMovie(movieId)
-    return successResponse(data,'Lấy thông tin phim thành công',200)
+    return successResponse(data, 'Lấy thông tin phim thành công', 200)
+  }
+
+  @Get('getMoviesBySearch')
+  async getMoviesBySearch(@Query() getMoviesBySearch: GetMoviesBySearch) {
+    const data = await this.movieService.getMoviesBySearch(getMoviesBySearch)
+    return successResponse(data, 'Lấy danh sách phim theo từ khóa thành công', 200)
+  }
+  @Get('getMovieRandom')
+  async getMovieRandom() {
+    const data = await this.movieService.getMovieRandom()
+    return successResponse(data, 'Lấy phim ngẫu nhiên thành công', 200)
+  }
+  @Get('getAllMoviesRandom')
+  async getAllMoviesRandom() {
+    const data = await this.movieService.getAllMoviesRandom()
+    return successResponse(data, 'Lấy danh sách phim ngẫu nhiên thành công', 200)
+  }
+  @Get('getMoviesFavorite')
+  async getMoviesFavorite() {
+    const data = await this.movieService.getMoviesFavorite()
+    return successResponse(data, 'Lấy danh sách phim được yêu thích nhất thành công', 200)
   }
 }
