@@ -6,6 +6,7 @@ import { UploadedFileType } from 'src/common/types/uploadedFile.type';
 import { UpdateMovieDto } from './dto/updateMovie.dto';
 import { Prisma } from '@prisma/client';
 import { GetAllMoviesDto } from './dto/getAllMovies.dto';
+import { GetMoviesBySearch } from './dto/getMovieBySearch';
 
 @Injectable()
 export class MovieService {
@@ -248,4 +249,75 @@ export class MovieService {
         })
         return movie
     }
+    async getMoviesBySearch(getMoviesBySearch: GetMoviesBySearch) {
+        const { search } = getMoviesBySearch
+
+        if (!search || search.trim() === "") {
+            return [];
+        }
+        const movies = await this.prisma.movie.findMany({
+            where: {
+                name: {
+                    contains: search.trim()
+                }
+            },
+            include: {
+                country: true,
+                genres: true,
+                actors: true
+            }
+        })
+        return movies
+    }
+
+    async getMovieRandom() {
+        const totalMovies = await this.prisma.movie.count({
+            where: { isActive: true }
+        })
+        if (totalMovies === 0) {
+            return null;
+        }
+        const randomIndex = Math.floor(Math.random() * totalMovies)
+        const movie = await this.prisma.movie.findMany({
+            where: {
+                isActive: true
+            },
+            take: randomIndex,
+            include: {
+                country: true,
+                genres: true,
+                actors: true
+            }
+
+        })
+        return movie
+    }
+
+    async getAllMoviesRandom() {
+        const movies = await this.prisma.$queryRaw`
+        SELECT *
+        FROM Movie
+        ORDER BY RAND()
+    `;
+
+        return movies;
+    }
+
+    // Lấy những phim có lượt yêu thích nhiều nhất  
+    async getMoviesFavorite() {
+        const movies = await this.prisma.movie.findMany({
+            include : {
+                _count : { // _count này là đếm số lượng liên quan
+                    select : {Favorite : true}
+                }
+            },
+            orderBy : {
+                Favorite : {
+                    _count : 'desc'
+                }
+            }
+        })
+        return movies
+    }
 }
+
