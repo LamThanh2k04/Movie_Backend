@@ -277,12 +277,13 @@ export class MovieService {
         if (totalMovies === 0) {
             return null;
         }
-        const randomIndex = Math.floor(Math.random() * totalMovies)
+        const randomIndex = Math.floor(Math.random() * totalMovies) + 1
+        console.log(randomIndex, totalMovies)
         const movie = await this.prisma.movie.findMany({
             where: {
+                id: randomIndex,
                 isActive: true
             },
-            take: randomIndex,
             include: {
                 country: true,
                 genres: true,
@@ -305,19 +306,55 @@ export class MovieService {
 
     // Lấy những phim có lượt yêu thích nhiều nhất  
     async getMoviesFavorite() {
-        const movies = await this.prisma.movie.findMany({
-            include : {
-                _count : { // _count này là đếm số lượng liên quan
-                    select : {Favorite : true}
-                }
+        const favoriteMovies = await this.prisma.favorite.groupBy({
+            by: ['movieId'],
+            _count: {
+                movieId: true,
             },
-            orderBy : {
-                Favorite : {
-                    _count : 'desc'
-                }
-            }
-        })
-        return movies
+            having: {
+                movieId: {
+                    _count: {
+                        gte: 1,
+                    },
+                },
+            },
+        });
+
+
+        const movieIds = favoriteMovies.map(
+            (item) => item.movieId
+        );
+
+        if (movieIds.length === 0) {
+            return [];
+        }
+
+        const movies = await this.prisma.movie.findMany({
+            where: {
+                id: {
+                    in: movieIds,
+                },
+            },
+            include: {
+                country: true,
+                genres: true,
+                actors: true,
+            },
+        });
+
+
+        const result = movies.map((movie) => {
+            const favorite = favoriteMovies.find(
+                (item) => item.movieId === movie.id
+            );
+
+            return {
+                ...movie,
+                favoriteCount: favorite?._count.movieId || 0,
+            };
+        });
+
+        return result;
     }
 }
 
