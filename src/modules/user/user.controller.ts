@@ -10,8 +10,7 @@ import { UploadedFileType } from 'src/common/types/uploadedFile.type';
 import { successResponse } from 'src/common/helper/response.helper';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { GetAllUsersDto } from './dto/getAllUsers.dto';
-import { AddFavoriteMovieDto } from './dto/addFavoriteMovie.dto';
-import { RemoveFavoriteMovieDto } from './dto/removeFavoriteMovie.dto';
+
 
 @Controller('user')
 export class UserController {
@@ -52,20 +51,20 @@ export class UserController {
     return successResponse(null, 'Cập nhật trạng thái thành công', 200)
   }
 
-  @Post('addFavoriteMovie')
+  @Post('addFavoriteMovie/:movieId')
   @Roles(Role.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
-  async addFavoriteMovie(@Req() req, @Body() addFavoriteMovieDto: AddFavoriteMovieDto) {
-    await this.userService.addFavoriteMovie(req.user.id, addFavoriteMovieDto)
+  async addFavoriteMovie(@Req() req, @Param('movieId', ParseIntPipe) movieId: number) {
+    await this.userService.addFavoriteMovie(req.user.id, movieId)
     return successResponse(null, 'Thêm yêu thích phim thành công', 200)
   }
 
 
-  @Post('removeFavoriteMovie')
+  @Post('removeFavoriteMovie/:movieId')
   @Roles(Role.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
-  async removeFavoriteMovie(@Req() req, @Body() removeFavoriteDto: RemoveFavoriteMovieDto) {
-    await this.userService.removeFavoriteMovie(req.user.id, removeFavoriteDto)
+  async removeFavoriteMovie(@Req() req, @Param('movieId', ParseIntPipe) movieId: number) {
+    await this.userService.removeFavoriteMovie(req.user.id, movieId)
     return successResponse(null, 'Xóa yêu thích phim thành công', 200)
   }
 
@@ -76,5 +75,13 @@ export class UserController {
   async getFavoriteMovieUser(@Req() req) {
     const data = await this.userService.getFavoriteMovieUser(req.user.id)
     return successResponse(data, 'Lấy danh sách yêu thích phim thành công', 200)
+  }
+
+  @Get('checkFavoriteMovie/:movieId')
+  @Roles(Role.USER)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  async checkFavoriteMovie(@Req() req, @Param('movieId', ParseIntPipe) movieId: number) {
+    const data = await this.userService.checkFavoriteMovie(req.user.id, movieId)
+    return successResponse(data, 'Kiểm tra yêu thích phim thành công', 200)
   }
 }
