@@ -9,6 +9,7 @@ import { Prisma, Role } from '@prisma/client';
 import { GetAllUsersDto } from './dto/getAllUsers.dto';
 import { AddFavoriteMovieDto } from './dto/addFavoriteMovie.dto';
 import { RemoveFavoriteMovieDto } from './dto/removeFavoriteMovie.dto';
+import { CheckFavoriteMovie } from './dto/checkFavoriteMovie';
 
 @Injectable()
 export class UserService {
@@ -144,9 +145,7 @@ export class UserService {
         })
     }
 
-    async addFavoriteMovie(userId: number, addFavoriteMovieDto: AddFavoriteMovieDto) {
-        const { movieId } = addFavoriteMovieDto
-
+    async addFavoriteMovie(userId: number, movieId: number) {
         const [movie, favorite] = await this.prisma.$transaction([
             this.prisma.movie.findUnique({
                 where: {
@@ -178,8 +177,7 @@ export class UserService {
         })
     }
 
-    async removeFavoriteMovie(userId: number, removeFavoriteMovieDto: RemoveFavoriteMovieDto) {
-        const { movieId } = removeFavoriteMovieDto
+    async removeFavoriteMovie(userId: number, movieId: number) {
 
         const [movie, favorite] = await this.prisma.$transaction([
             this.prisma.movie.findUnique({
@@ -228,6 +226,17 @@ export class UserService {
             }
         })
         return favorite
+    }
 
+    async checkFavoriteMovie(userId: number, movieId: number) {
+        const favorite = await this.prisma.favorite.findFirst({
+            where: {
+                userId: userId,
+                movieId: movieId
+            }
+        })
+        return {
+            isFavorite: !!favorite
+        }
     }
 }
