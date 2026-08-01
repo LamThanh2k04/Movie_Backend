@@ -11,7 +11,7 @@ import { FavoriteChartDto } from './dto/favoriteChart.dto';
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) { }
 
-  @Get('GetOverView')
+  @Get('getAllOverView')
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RoleGuard)
   async getAllOverView() {
