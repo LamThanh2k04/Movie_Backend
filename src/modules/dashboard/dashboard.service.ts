@@ -47,25 +47,59 @@ export class DashboardService {
     }
 
     async getMovieFavoriteUserChart() {
-        const movie = await this.prisma.movie.findMany({
+        const favoriteMovies = await this.prisma.favorite.groupBy({
+            by: ['movieId'],
+            _count: {
+                movieId: true,
+            },
+            having: {
+                movieId: {
+                    _count: {
+                        gte: 2,
+                    },
+                },
+            },
+        });
+
+
+        const movieIds = favoriteMovies.map(
+            (item) => item.movieId
+        );
+
+        if (movieIds.length === 0) {
+            return [];
+        }
+
+        const movies = await this.prisma.movie.findMany({
+            where: {
+                id: {
+                    in: movieIds,
+                },
+            },
+            take : 5,
             include: {
-                _count: {
-                    select: {
-                        Favorite: true
-                    }
-                }
+                country: true,
+                genres: true,
+                actors: true,
             },
-            orderBy: {
-                Favorite: {
-                    _count: 'desc'
-                }
-            },
-            take: 5
-        })
-        return movie
+        });
+
+
+        const result = movies.map((movie) => {
+            const favorite = favoriteMovies.find(
+                (item) => item.movieId === movie.id
+            );
+
+            return {
+                ...movie,
+                favoriteCount: favorite?._count.movieId || 0,
+            };
+        });
+
+        return result;
     }
 
-    async getFavoriteChart(favoriteChartDto : FavoriteChartDto) {
+    async getFavoriteChart(favoriteChartDto: FavoriteChartDto) {
         const selectedYear = favoriteChartDto.year ?? new Date().getFullYear(); // Nếu year null hoặc undefined thì dùng bên phải
 
         const result = await this.prisma.$queryRaw<
