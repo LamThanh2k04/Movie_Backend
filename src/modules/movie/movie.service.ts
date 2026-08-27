@@ -195,6 +195,8 @@ export class MovieService {
         const limit = 5
         const skip = (page - 1) * limit
 
+        const year = Number(search)
+
         const whereCondition = {
             ...(search ? {
                 OR: [
@@ -203,9 +205,9 @@ export class MovieService {
                             contains: search // contains thì giống like tìm từ gần giống
                         }
                     },
-                    {
-                        releaseYear: Number(search)
-                    }
+                    ...(Number.isInteger(year)  // ... là phân rã cái sqread cái cha ra lấy con còn rest thu lại là ở 1 tham số function
+                        ? [{ releaseYear: year }]
+                        : [])
                 ]
             } : {})
         }
@@ -278,7 +280,6 @@ export class MovieService {
             return null;
         }
         const randomIndex = Math.floor(Math.random() * totalMovies) + 1
-        console.log(randomIndex, totalMovies)
         const movie = await this.prisma.movie.findMany({
             where: {
                 id: randomIndex,
@@ -319,7 +320,6 @@ export class MovieService {
                 },
             },
         });
-
 
         const movieIds = favoriteMovies.map(
             (item) => item.movieId
