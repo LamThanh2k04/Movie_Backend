@@ -55,11 +55,13 @@ export class DashboardService {
             having: {
                 movieId: {
                     _count: {
-                        gte: 2,
+                        gte: 1,
                     },
                 },
             },
         });
+
+        console.log('favoriteMovies:', favoriteMovies);
 
 
         const movieIds = favoriteMovies.map(
@@ -76,7 +78,7 @@ export class DashboardService {
                     in: movieIds,
                 },
             },
-            take : 5,
+            take: 5,
             include: {
                 country: true,
                 genres: true,
@@ -120,7 +122,8 @@ export class DashboardService {
         }));
 
         result.forEach(item => {
-            data[item.month - 1].favoriteCount = Number(item.favoriteCount);
+            data[Number(item.month) - 1].favoriteCount =
+                Number(item.favoriteCount);
         });
 
         return data;
